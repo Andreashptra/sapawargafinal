@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { writeFile } from 'fs/promises'
+import { writeFile, mkdir } from 'fs/promises'
 import { join } from 'path'
+import { existsSync } from 'fs'
 
 export async function POST(req: NextRequest) {
   try {
@@ -10,12 +11,25 @@ export async function POST(req: NextRequest) {
 
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
-    const filename = `${Date.now()}_${file.name.replace(/\s/g, '_')}`
-    const path = join(process.cwd(), 'public', 'uploads', filename)
 
-    await writeFile(path, buffer)
+    // On Vercel, filesystem is read-only. Use base64 data URL instead.
+    const isVercel = process.env.VERCEL === '1'
 
-    return NextResponse.json({ success: true, url: `/uploads/${filename}` })
+    if (isVercel) {
+      // Convert to base64 data URL for storage in database
+      const base64 = buffer.toString('base64')
+      const mimeType = file.type || 'image/png'
+      const dataUrl = `data:${mimeType};base64,${base64}`
+      return NextResponse.json({ success: true, url: dataUrl })
+    } else {
+      // Local development: save to filesystem
+      const uploadsDir = join(process.cwd(), 'public', 'uploads')
+      if (!existsSync(uploadsDir)) await mkdir(uploadsDir, { recursive: true })
+      const filename = `${Date.now()}_${file.name.replace(/\s/g, '_')}`
+      const path = join(uploadsDir, filename)
+      await writeFile(path, buffer)
+      return NextResponse.json({ success: true, url: `/uploads/${filename}` })
+    }
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }

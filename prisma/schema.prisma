@@ -5,6 +5,7 @@ generator client {
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
+  relationMode = "prisma"
 }
 
 model Level {
@@ -31,6 +32,7 @@ model User {
   createdAt   DateTime   @default(now()) @map("created_at")
   updatedAt   DateTime   @updatedAt @map("updated_at")
 
+  @@index([levelId])
   @@map("users")
 }
 
@@ -64,6 +66,7 @@ model Complaint {
   createdAt           DateTime   @default(now()) @map("created_at")
   updatedAt           DateTime   @updatedAt @map("updated_at")
 
+  @@index([societyId])
   @@map("complaint")
 }
 
@@ -78,5 +81,6 @@ model Response {
   createdAt    DateTime  @default(now()) @map("created_at")
   updatedAt    DateTime  @updatedAt @map("updated_at")
 
+  @@index([userId])
   @@map("response")
 }
