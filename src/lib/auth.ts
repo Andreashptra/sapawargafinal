@@ -1,6 +1,6 @@
 import { NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
-import { prisma } from './prisma'
+import { supabase } from './supabase'
 import { compare } from 'bcryptjs'
 
 // Laravel uses $2y$ prefix, bcryptjs uses $2a$. Convert for compatibility.
@@ -23,21 +23,19 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.username || !credentials?.password) return null
-        const user = await prisma.user.findFirst({
-          where: {
-            OR: [
-              { username: credentials.username },
-              { email: credentials.username },
-            ],
-          },
-          include: { level: true },
-        })
-        if (!user) return null
+
+        const { data: user, error } = await supabase
+          .from('users')
+          .select('*, level(*)')
+          .or(`username.eq.${credentials.username},email.eq.${credentials.username}`)
+          .single()
+
+        if (error || !user) return null
         const isValid = await compare(credentials.password, fixLaravelHash(user.password))
         if (!isValid) return null
         return {
           id: String(user.id),
-          name: user.officerName,
+          name: user.officer_name,
           email: user.email,
           role: user.level?.name || 'Officer',
           type: 'admin',
@@ -54,10 +52,14 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.username || !credentials?.password) return null
-        const society = await prisma.society.findFirst({
-          where: { username: credentials.username },
-        })
-        if (!society) return null
+
+        const { data: society, error } = await supabase
+          .from('society')
+          .select('*')
+          .eq('username', credentials.username)
+          .single()
+
+        if (error || !society) return null
         const isValid = await compare(credentials.password, fixLaravelHash(society.password))
         if (!isValid) return null
         return {

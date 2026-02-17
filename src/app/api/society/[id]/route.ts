@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { supabase } from '@/lib/supabase'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { hash } from 'bcryptjs'
@@ -9,7 +9,9 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
   if (!session || session.user.type !== 'admin') {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
-  await prisma.society.delete({ where: { id: parseInt(params.id) } })
+
+  const { error } = await supabase.from('society').delete().eq('id', parseInt(params.id))
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json({ success: true })
 }
 
@@ -25,13 +27,14 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
       name: body.name,
       username: body.username,
       email: body.email,
-      phoneNumber: body.phoneNumber,
+      phone_number: body.phoneNumber,
       address: body.address,
     }
     if (body.password) data.password = await hash(body.password, 12)
     if (body.photo) data.photo = body.photo
 
-    await prisma.society.update({ where: { id: parseInt(params.id) }, data })
+    const { error } = await supabase.from('society').update(data).eq('id', parseInt(params.id))
+    if (error) throw error
     return NextResponse.json({ success: true })
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 })

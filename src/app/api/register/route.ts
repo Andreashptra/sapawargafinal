@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { supabase } from '@/lib/supabase'
 import { hash } from 'bcryptjs'
 
 export async function POST(req: NextRequest) {
@@ -11,25 +11,33 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Semua field wajib diisi' }, { status: 400 })
     }
 
-    const existing = await prisma.society.findFirst({ where: { username } })
+    const { data: existing } = await supabase
+      .from('society')
+      .select('id')
+      .eq('username', username)
+      .single()
+
     if (existing) {
       return NextResponse.json({ error: 'Username sudah digunakan' }, { status: 400 })
     }
 
     const hashedPw = await hash(password, 12)
-    const society = await prisma.society.create({
-      data: {
+    const { data: society, error } = await supabase
+      .from('society')
+      .insert({
         nik,
         name,
         username,
         email: email || '',
-        phoneNumber,
+        phone_number: phoneNumber,
         address,
         password: hashedPw,
         photo: photo || '',
-      },
-    })
+      })
+      .select()
+      .single()
 
+    if (error) throw error
     return NextResponse.json({ success: true, id: society.id })
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 })

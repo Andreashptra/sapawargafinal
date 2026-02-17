@@ -1,16 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { supabase, transformKeys } from '@/lib/supabase'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 
 // GET single complaint
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
-  const complaint = await prisma.complaint.findUnique({
-    where: { id: parseInt(params.id) },
-    include: { society: true, response: { include: { user: true } } },
-  })
-  if (!complaint) return NextResponse.json({ error: 'Not found' }, { status: 404 })
-  return NextResponse.json(complaint)
+  const { data: complaint, error } = await supabase
+    .from('complaint')
+    .select('*, society(*), response(*, user:users(*))')
+    .eq('id', parseInt(params.id))
+    .single()
+
+  if (error || !complaint) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+  return NextResponse.json(transformKeys(complaint))
 }
 
 // PUT: Update complaint status & response (admin)
@@ -25,25 +27,26 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     const { status, response: responseText } = body
     const complaintId = parseInt(params.id)
 
-    await prisma.complaint.update({
-      where: { id: complaintId },
-      data: { status },
-    })
+    const { error: updateError } = await supabase
+      .from('complaint')
+      .update({ status })
+      .eq('id', complaintId)
 
-    await prisma.response.upsert({
-      where: { complaintId },
-      update: {
-        responseDate: new Date(),
-        response: responseText,
-        userId: parseInt(session.user.id),
-      },
-      create: {
-        complaintId,
-        responseDate: new Date(),
-        response: responseText,
-        userId: parseInt(session.user.id),
-      },
-    })
+    if (updateError) throw updateError
+
+    const { error: upsertError } = await supabase
+      .from('response')
+      .upsert(
+        {
+          complaint_id: complaintId,
+          response_date: new Date().toISOString(),
+          response: responseText,
+          user_id: parseInt(session.user.id),
+        },
+        { onConflict: 'complaint_id' }
+      )
+
+    if (upsertError) throw upsertError
 
     return NextResponse.json({ success: true })
   } catch (error: any) {
@@ -58,6 +61,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  await prisma.complaint.delete({ where: { id: parseInt(params.id) } })
+  const { error } = await supabase.from('complaint').delete().eq('id', parseInt(params.id))
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json({ success: true })
 }

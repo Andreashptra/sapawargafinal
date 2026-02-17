@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { supabase, transformKeys } from '@/lib/supabase'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 
@@ -8,24 +8,19 @@ export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const { searchParams } = new URL(req.url)
-  const nik = searchParams.get('nik')
+  let query = supabase
+    .from('complaint')
+    .select('*, society(*), response(*, user:users(*))')
+    .order('id', { ascending: false })
 
-  let complaints
-  if (session.user.type === 'admin') {
-    complaints = await prisma.complaint.findMany({
-      include: { society: true, response: { include: { user: true } } },
-      orderBy: { id: 'desc' },
-    })
-  } else {
-    complaints = await prisma.complaint.findMany({
-      where: { societyId: parseInt(session.user.id) },
-      include: { society: true, response: { include: { user: true } } },
-      orderBy: { id: 'desc' },
-    })
+  if (session.user.type !== 'admin') {
+    query = query.eq('society_id', parseInt(session.user.id))
   }
 
-  return NextResponse.json(complaints)
+  const { data, error } = await query
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+  return NextResponse.json(transformKeys(data))
 }
 
 // POST: Create complaint
@@ -43,21 +38,23 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Isi laporan wajib diisi' }, { status: 400 })
     }
 
-    const complaint = await prisma.complaint.create({
-      data: {
-        dateComplaint: new Date(),
+    const { data: complaint, error } = await supabase
+      .from('complaint')
+      .insert({
+        date_complaint: new Date().toISOString(),
         nik: session.user.nik!,
-        contentsOfTheReport,
+        contents_of_the_report: contentsOfTheReport,
         photo: photo || '',
         status: '0',
-        societyId: parseInt(session.user.id),
-      },
-    })
+        society_id: parseInt(session.user.id),
+      })
+      .select()
+      .single()
+
+    if (error) throw error
 
     // Create empty response entry
-    await prisma.response.create({
-      data: { complaintId: complaint.id },
-    })
+    await supabase.from('response').insert({ complaint_id: complaint.id })
 
     return NextResponse.json({ success: true, id: complaint.id })
   } catch (error: any) {
