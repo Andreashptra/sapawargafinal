@@ -1,0 +1,25 @@
+/* This is the main CSS file for the application */
+
+/* Example styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f8f9fa;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: #343a40;
+}
+
+a {
+    color: #029058;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #029058;
+    text-decoration: underline;
+}
+
+/* Add more styles as needed */
