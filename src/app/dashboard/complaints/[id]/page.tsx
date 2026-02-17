@@ -51,6 +51,12 @@ export default function ComplaintDetailPage() {
         <div className="card border-l-4 border-primary">
           <h3 className="font-bold text-dark mb-2">Tanggapan Petugas</h3>
           <p className="text-sm text-gray-600 leading-relaxed">{complaint.response.response || '-'}</p>
+          {complaint.response.evidencePhoto && (
+            <div className="mt-3">
+              <p className="text-xs text-gray-400 mb-1.5">Bukti Penanganan:</p>
+              <img src={complaint.response.evidencePhoto} alt="Bukti Penanganan" className="rounded-xl border max-w-full max-h-60 object-contain cursor-pointer" onClick={() => window.open(complaint.response.evidencePhoto, '_blank')} />
+            </div>
+          )}
           {complaint.response.responseDate && (
             <p className="text-xs text-gray-400 mt-3">
               Ditanggapi pada {new Date(complaint.response.responseDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
-import { FiArrowLeft } from 'react-icons/fi'
+import { FiArrowLeft, FiUpload, FiX } from 'react-icons/fi'
 import toast from 'react-hot-toast'
 
 export default function AdminComplaintDetailPage() {
@@ -15,6 +15,8 @@ export default function AdminComplaintDetailPage() {
   const [response, setResponse] = useState('')
   const [status, setStatus] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const [evidencePhoto, setEvidencePhoto] = useState('')
+  const [uploading, setUploading] = useState(false)
 
   const load = () => {
     fetch(`/api/complaints/${id}`)
@@ -23,12 +25,34 @@ export default function AdminComplaintDetailPage() {
         setComplaint(d)
         setStatus(d.status || '0')
         setResponse(d.response?.response || '')
+        setEvidencePhoto(d.response?.evidencePhoto || '')
         setLoading(false)
       })
       .catch(() => setLoading(false))
   }
 
   useEffect(() => { load() }, [id])
+
+  const handleUploadEvidence = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setUploading(true)
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+      const res = await fetch('/api/upload', { method: 'POST', body: formData })
+      const data = await res.json()
+      if (data.url) {
+        setEvidencePhoto(data.url)
+        toast.success('Bukti berhasil diupload')
+      } else {
+        toast.error('Gagal upload bukti')
+      }
+    } catch {
+      toast.error('Gagal upload bukti')
+    }
+    setUploading(false)
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -37,7 +61,7 @@ export default function AdminComplaintDetailPage() {
       const res = await fetch(`/api/complaints/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status, response }),
+        body: JSON.stringify({ status, response, evidencePhoto }),
       })
       if (res.ok) {
         toast.success('Berhasil diperbarui')
@@ -137,6 +161,27 @@ export default function AdminComplaintDetailPage() {
             <textarea value={response} onChange={e => setResponse(e.target.value)} rows={5} className="input-field resize-none" placeholder="Tulis tanggapan atau pilih template di atas..." />
             <p className="text-[11px] text-gray-400 mt-1">Template otomatis menyertakan info kontak. Anda bisa mengedit sebelum menyimpan.</p>
           </div>
+
+          {/* Upload Bukti Penanganan */}
+          <div>
+            <label className="block text-sm font-medium text-gray-600 mb-1.5">Bukti Penanganan</label>
+            {evidencePhoto ? (
+              <div className="relative inline-block">
+                <img src={evidencePhoto} alt="Bukti" className="max-h-48 rounded-xl border object-contain" />
+                <button type="button" onClick={() => setEvidencePhoto('')} className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition">
+                  <FiX size={14} />
+                </button>
+              </div>
+            ) : (
+              <label className={`flex items-center gap-2 px-4 py-3 border-2 border-dashed border-gray-200 rounded-xl cursor-pointer hover:border-primary hover:bg-primary/5 transition ${uploading ? 'opacity-50 pointer-events-none' : ''}`}>
+                <FiUpload className="text-gray-400" />
+                <span className="text-sm text-gray-400">{uploading ? 'Mengupload...' : 'Upload foto bukti penanganan'}</span>
+                <input type="file" accept="image/*" onChange={handleUploadEvidence} className="hidden" />
+              </label>
+            )}
+            <p className="text-[11px] text-gray-400 mt-1">Upload foto bukti bahwa laporan sedang/sudah ditangani</p>
+          </div>
+
           <button type="submit" disabled={submitting} className="btn-primary disabled:opacity-50">
             {submitting ? 'Menyimpan...' : 'Simpan Tanggapan'}
           </button>

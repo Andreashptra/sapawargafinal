@@ -24,7 +24,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 
   try {
     const body = await req.json()
-    const { status, response: responseText } = body
+    const { status, response: responseText, evidencePhoto } = body
     const complaintId = parseInt(params.id)
 
     const { error: updateError } = await supabase
@@ -34,17 +34,17 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 
     if (updateError) throw updateError
 
+    const responseData: any = {
+      complaint_id: complaintId,
+      response_date: new Date().toISOString(),
+      response: responseText,
+      user_id: parseInt(session.user.id),
+    }
+    if (evidencePhoto) responseData.evidence_photo = evidencePhoto
+
     const { error: upsertError } = await supabase
       .from('response')
-      .upsert(
-        {
-          complaint_id: complaintId,
-          response_date: new Date().toISOString(),
-          response: responseText,
-          user_id: parseInt(session.user.id),
-        },
-        { onConflict: 'complaint_id' }
-      )
+      .upsert(responseData, { onConflict: 'complaint_id' })
 
     if (upsertError) throw upsertError
 
