@@ -41,7 +41,7 @@ export default function LoginPage() {
           <div className="loading-content">
             <div className="loading-logo-wrapper">
               <div className="loading-logo-ring" />
-              <Image src="/demak.png" alt="Logo Kabupaten Demak" width={100} height={100} className="loading-logo" priority />
+              <Image src="/sapa-warga_logo_keckebonagung.svg" alt="Logo Kecamatan Kebonagung" width={100} height={100} className="loading-logo" priority />
             </div>
             <h1 className="loading-title">SENGKUYUNG</h1>
             <p className="loading-subtitle">Mengalihkan ke Dashboard...</p>
@@ -58,7 +58,7 @@ export default function LoginPage() {
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
             <Link href="/">
-              <img src="/demak.png" alt="Logo" className="w-16 h-16 mx-auto mb-4" />
+              <img src="/sapa-warga_logo_keckebonagung.svg" alt="Logo" className="w-16 h-16 mx-auto mb-4" />
             </Link>
             <h1 className="text-2xl font-bold text-white">Masuk Akun</h1>
             <p className="text-white/60 text-sm mt-1">Sapa Warga - Kecamatan Kebonagung</p>

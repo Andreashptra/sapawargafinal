@@ -14,7 +14,7 @@ export default function Navbar() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3">
-            <img src="/demak.png" alt="Logo" className="w-9 h-9" />
+            <img src="/sapa-warga_logo_keckebonagung.svg" alt="Logo" className="w-9 h-9" />
             <span className="text-lg font-bold text-primary">Sapa Warga</span>
           </Link>
 

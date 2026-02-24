@@ -40,7 +40,7 @@ export default function LoadingScreen() {
         <div className="loading-logo-wrapper">
           <div className="loading-logo-ring" />
           <Image
-            src="/demak.png"
+            src="/sapa-warga_logo_keckebonagung.svg"
             alt="Logo Kabupaten Demak"
             width={100}
             height={100}

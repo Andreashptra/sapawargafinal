@@ -31,7 +31,7 @@ export default function AdminLoginPage() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link href="/">
-            <img src="/demak.png" alt="Logo" className="w-16 h-16 mx-auto mb-4" />
+            <img src="/sapa-warga_logo_keckebonagung.svg" alt="Logo" className="w-16 h-16 mx-auto mb-4" />
           </Link>
           <h1 className="text-2xl font-bold text-white">Admin Panel</h1>
           <p className="text-white/40 text-sm mt-1">Sapa Warga - Kecamatan Kebonagung</p>

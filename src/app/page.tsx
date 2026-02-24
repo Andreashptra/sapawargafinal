@@ -98,7 +98,7 @@ export default function HomePage() {
             <div className="grid md:grid-cols-3 gap-10 mb-10">
               <div>
                 <div className="flex items-center gap-3 mb-4">
-                  <img src="/demak.png" alt="Logo" className="w-10 h-10" />
+                  <img src="/sapa-warga_logo_keckebonagung.svg" alt="Logo" className="w-10 h-10" />
                   <span className="text-lg font-bold">Sapa Warga</span>
                 </div>
                 <p className="text-gray-400 text-sm leading-relaxed">Sistem Pengaduan Masyarakat Online Kecamatan Kebonagung, Kabupaten Demak, Jawa Tengah.</p>

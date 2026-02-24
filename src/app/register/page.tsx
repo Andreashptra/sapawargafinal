@@ -44,7 +44,7 @@ export default function RegisterPage() {
       <div className="w-full max-w-lg">
         <div className="text-center mb-8">
           <Link href="/">
-            <img src="/demak.png" alt="Logo" className="w-16 h-16 mx-auto mb-4" />
+            <img src="/sapa-warga_logo_keckebonagung.svg" alt="Logo" className="w-16 h-16 mx-auto mb-4" />
           </Link>
           <h1 className="text-2xl font-bold text-white">Daftar Akun</h1>
           <p className="text-white/60 text-sm mt-1">Sapa Warga - Kecamatan Kebonagung</p>

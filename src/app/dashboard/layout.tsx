@@ -32,7 +32,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <aside className={`fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-100 flex flex-col transition-transform lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="p-5 border-b border-gray-100">
           <Link href="/" className="flex items-center gap-3">
-            <img src="/demak.png" alt="Logo" className="w-10 h-10" />
+            <img src="/sapa-warga_logo_keckebonagung.svg" alt="Logo" className="w-10 h-10" />
             <div>
               <h2 className="font-bold text-dark text-sm">Sapa Warga</h2>
               <p className="text-[10px] text-gray-400">Kec. Kebonagung</p>
