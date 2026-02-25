@@ -27,7 +27,7 @@ export default function Navbar() {
 
       if (screenHeight >= 852) {
         // Dynamic Island - iPhone 14 Pro/Max, 15/Plus/Pro/Max, 16 series, 17 series
-        safeTop = 59
+        safeTop = 55
       } else if (screenHeight >= 812) {
         // Notch - iPhone X, XS, 11 Pro, 12 mini, 12, 13, 14 etc
         safeTop = 47
