@@ -6,12 +6,20 @@
 
 html {
   scroll-behavior: smooth;
+  /* CSS variables injected by native iOS code (AppDelegate.swift) */
+  --cap-safe-top: 0px;
+  --cap-safe-bottom: 0px;
 }
 
 body {
   font-family: 'Poppins', sans-serif;
   background: #f5f7fa;
   color: #1a1a2e;
+}
+
+/* Navbar safe area - pushed below status bar in iOS app */
+.ios-safe-nav {
+  padding-top: var(--cap-safe-top, 0px);
 }
 
 @layer components {
