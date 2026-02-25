@@ -6,20 +6,22 @@
 
 html {
   scroll-behavior: smooth;
-  /* CSS variables injected by native iOS code (AppDelegate.swift) */
-  --cap-safe-top: 0px;
-  --cap-safe-bottom: 0px;
+  /* Fallback CSS variables - overridden by native iOS code (AppDelegate.swift) */
+  --cap-safe-top: env(safe-area-inset-top, 0px);
+  --cap-safe-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 body {
   font-family: 'Poppins', sans-serif;
   background: #f5f7fa;
   color: #1a1a2e;
+  /* Body safe area for non-fixed content */
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
-/* Navbar safe area - pushed below status bar in iOS app */
+/* Navbar safe area - pushed below status bar on iOS */
 .ios-safe-nav {
-  padding-top: var(--cap-safe-top, 0px);
+  padding-top: var(--cap-safe-top, 0px) !important;
 }
 
 @layer components {
