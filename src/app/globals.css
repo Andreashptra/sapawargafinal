@@ -4,7 +4,9 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
 
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+}
 
 body {
   font-family: 'Poppins', sans-serif;
@@ -17,25 +19,43 @@ body {
   padding-right: env(safe-area-inset-right);
 }
 
+/* iOS Capacitor app - navbar safe area */
+@media (display-mode: standalone) {
+  .ios-safe-nav {
+    padding-top: 54px !important;
+  }
+}
+
+/* Fallback: also apply when inside Capacitor WebView (not standalone detected) */
+.ios-safe-nav {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
 @layer components {
   .btn-primary {
     @apply bg-primary text-white font-semibold py-2.5 px-6 rounded-pill hover:bg-primary-dark transition-all shadow-md hover:shadow-lg;
   }
+
   .btn-outline {
     @apply border-2 border-primary text-primary font-semibold py-2.5 px-6 rounded-pill hover:bg-primary hover:text-white transition-all;
   }
+
   .card {
     @apply bg-white rounded-xl shadow-md p-6 transition-all hover:shadow-lg;
   }
+
   .input-field {
     @apply w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all;
   }
+
   .badge-pending {
     @apply bg-yellow-100 text-yellow-700 text-xs font-semibold px-3 py-1 rounded-pill;
   }
+
   .badge-process {
     @apply bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-pill;
   }
+
   .badge-finished {
     @apply bg-green-100 text-green-700 text-xs font-semibold px-3 py-1 rounded-pill;
   }
@@ -84,8 +104,15 @@ body {
 }
 
 @keyframes floatCircle {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  50% { transform: translate(20px, -20px) scale(1.05); }
+
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  50% {
+    transform: translate(20px, -20px) scale(1.05);
+  }
 }
 
 /* Content container */
@@ -119,7 +146,9 @@ body {
 }
 
 @keyframes spinRing {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .loading-logo {
@@ -131,8 +160,17 @@ body {
 }
 
 @keyframes logoPulse {
-  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 20px rgba(3, 185, 111, 0.4)); }
-  50% { transform: scale(1.05); filter: drop-shadow(0 0 30px rgba(3, 185, 111, 0.6)); }
+
+  0%,
+  100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 20px rgba(3, 185, 111, 0.4));
+  }
+
+  50% {
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 30px rgba(3, 185, 111, 0.6));
+  }
 }
 
 /* Title with moving shadow */
@@ -153,21 +191,25 @@ body {
       -4px 0 8px rgba(3, 185, 111, 0.7),
       4px 0 8px rgba(52, 211, 153, 0.0);
   }
+
   25% {
     text-shadow:
       0 -4px 8px rgba(3, 185, 111, 0.4),
       0 4px 8px rgba(52, 211, 153, 0.4);
   }
+
   50% {
     text-shadow:
       4px 0 8px rgba(52, 211, 153, 0.7),
       -4px 0 8px rgba(3, 185, 111, 0.0);
   }
+
   75% {
     text-shadow:
       0 4px 8px rgba(52, 211, 153, 0.4),
       0 -4px 8px rgba(3, 185, 111, 0.4);
   }
+
   100% {
     text-shadow:
       -4px 0 8px rgba(3, 185, 111, 0.7),
@@ -210,8 +252,18 @@ body {
 }
 
 @keyframes dotBounce {
-  0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
-  40% { transform: scale(1.2); opacity: 1; }
+
+  0%,
+  80%,
+  100% {
+    transform: scale(0.6);
+    opacity: 0.4;
+  }
+
+  40% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
 }
 
 /* Responsive */
@@ -220,10 +272,12 @@ body {
     font-size: 1.6rem;
     letter-spacing: 0.25em;
   }
+
   .loading-logo {
     width: 80px;
     height: 80px;
   }
+
   .loading-logo-wrapper {
     width: 100px;
     height: 100px;
