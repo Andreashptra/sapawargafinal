@@ -12,23 +12,6 @@ body {
   font-family: 'Poppins', sans-serif;
   background: #f5f7fa;
   color: #1a1a2e;
-  /* iOS safe area support */
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
-  padding-left: env(safe-area-inset-left);
-  padding-right: env(safe-area-inset-right);
-}
-
-/* iOS Capacitor app - navbar safe area */
-@media (display-mode: standalone) {
-  .ios-safe-nav {
-    padding-top: 54px !important;
-  }
-}
-
-/* Fallback: also apply when inside Capacitor WebView (not standalone detected) */
-.ios-safe-nav {
-  padding-top: env(safe-area-inset-top, 0px);
 }
 
 @layer components {
