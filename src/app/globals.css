@@ -12,6 +12,8 @@ body {
   color: #1a1a2e;
 }
 
+/* Container utility untuk responsif */
+
 @layer components {
   .btn-primary {
     @apply bg-primary text-white font-semibold py-2.5 px-6 rounded-pill hover:bg-primary-dark transition-all shadow-md hover:shadow-lg;
