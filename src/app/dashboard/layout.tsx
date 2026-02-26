@@ -75,7 +75,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
       {/* Main */}
       <div className="flex-1 flex flex-col min-w-0">
-        <header ref={headerRef} className="bg-white border-b border-gray-100 px-4 lg:px-8 py-4 flex items-center gap-4">
+        <header ref={headerRef} className="sticky top-0 z-10 bg-white border-b border-gray-100 px-4 lg:px-8 py-4 flex items-center gap-4">
           <button onClick={() => setSidebarOpen(true)} className="lg:hidden text-dark text-xl"><FiMenu /></button>
           <h1 className="text-lg font-bold text-dark">Dashboard Masyarakat</h1>
         </header>
