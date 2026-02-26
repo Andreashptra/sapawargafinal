@@ -13,6 +13,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const router = useRouter()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const headerRef = useIOSSafeArea<HTMLElement>()
+  const sidebarRef = useIOSSafeArea<HTMLElement>()
 
   const links = [
     { href: '/dashboard', label: 'Dashboard', icon: <FiHome /> },
@@ -31,7 +32,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {sidebarOpen && <div className="fixed inset-0 bg-black/40 z-40 lg:hidden" onClick={() => setSidebarOpen(false)} />}
 
       {/* Sidebar */}
-      <aside className={`fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-100 flex flex-col transition-transform lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+      <aside ref={sidebarRef} className={`fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-100 flex flex-col transition-transform lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="p-5 border-b border-gray-100">
           <Link href="/" className="flex items-center gap-3">
             <img src="/sapa-warga_logo_keckebonagung.svg" alt="Logo" className="w-10 h-10" />
