@@ -31,7 +31,7 @@ export default function AdminReportsPage() {
   }
 
   const exportCSV = () => {
-    const headers = ['No', 'Tanggal', 'Pelapor', 'NIK', 'Isi Laporan', 'Status', 'Tanggapan', 'Bukti Penanganan']
+    const headers = ['No', 'Tanggal', 'Pelapor', 'NIK', 'Isi Laporan', 'Status', 'Tanggapan']
     const rows = filtered.map((c: any, i: number) => [
       i + 1,
       new Date(c.dateComplaint).toLocaleDateString('id-ID'),
@@ -40,7 +40,6 @@ export default function AdminReportsPage() {
       `"${(c.contentsOfTheReport || '').replace(/"/g, '""')}"`,
       statusLabel(c.status),
       `"${(c.response?.response || '-').replace(/"/g, '""')}"`,
-      c.response?.evidencePhoto || '-',
     ])
 
     const csvContent = '\uFEFF' + [headers.join(','), ...rows.map(r => r.join(','))].join('\n')
@@ -58,12 +57,9 @@ export default function AdminReportsPage() {
     let html = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="utf-8"><style>td,th{border:1px solid #ccc;padding:6px 10px;font-family:Arial;font-size:12px}th{background:#16a34a;color:#fff;font-weight:bold}tr:nth-child(even){background:#f9f9f9}</style></head><body>'
     html += '<h2 style="font-family:Arial">Laporan Pengaduan Masyarakat - Kecamatan Kebonagung</h2>'
     html += `<p style="font-family:Arial;font-size:12px">Dicetak: ${new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })} | Total: ${filtered.length} data</p>`
-    html += '<table><thead><tr><th>No</th><th>Tanggal</th><th>Pelapor</th><th>NIK</th><th>Isi Laporan</th><th>Status</th><th>Tanggapan</th><th>Bukti Penanganan</th></tr></thead><tbody>'
+    html += '<table><thead><tr><th>No</th><th>Tanggal</th><th>Pelapor</th><th>NIK</th><th>Isi Laporan</th><th>Status</th><th>Tanggapan</th></tr></thead><tbody>'
     filtered.forEach((c: any, i: number) => {
-      const evidenceImg = c.response?.evidencePhoto
-        ? `<img src="${c.response.evidencePhoto}" width="100" />`
-        : '-'
-      html += `<tr><td>${i + 1}</td><td>${new Date(c.dateComplaint).toLocaleDateString('id-ID')}</td><td>${c.society?.name || '-'}</td><td>${c.society?.nik || '-'}</td><td>${c.contentsOfTheReport || '-'}</td><td>${statusLbl(c.status)}</td><td>${c.response?.response || '-'}</td><td>${evidenceImg}</td></tr>`
+      html += `<tr><td>${i + 1}</td><td>${new Date(c.dateComplaint).toLocaleDateString('id-ID')}</td><td>${c.society?.name || '-'}</td><td>${c.society?.nik || '-'}</td><td>${c.contentsOfTheReport || '-'}</td><td>${statusLbl(c.status)}</td><td>${c.response?.response || '-'}</td></tr>`
     })
     html += '</tbody></table></body></html>'
 
@@ -134,7 +130,6 @@ export default function AdminReportsPage() {
                 <th className="text-left px-5 py-3 text-gray-400 font-medium">Isi Laporan</th>
                 <th className="text-left px-5 py-3 text-gray-400 font-medium">Status</th>
                 <th className="text-left px-5 py-3 text-gray-400 font-medium">Tanggapan</th>
-                <th className="text-left px-5 py-3 text-gray-400 font-medium">Bukti</th>
               </tr>
             </thead>
             <tbody>
@@ -151,13 +146,6 @@ export default function AdminReportsPage() {
                     {c.status === 'finished' && <span className="badge-finished">Selesai</span>}
                   </td>
                   <td className="px-5 py-3 text-gray-500 max-w-[200px] truncate">{c.response?.response || '-'}</td>
-                  <td className="px-5 py-3">
-                    {c.response?.evidencePhoto ? (
-                      <img src={c.response.evidencePhoto} alt="Bukti" className="w-12 h-12 object-cover rounded-lg border cursor-pointer" onClick={() => window.open(c.response.evidencePhoto, '_blank')} />
-                    ) : (
-                      <span className="text-gray-300">-</span>
-                    )}
-                  </td>
                 </tr>
               ))}
             </tbody>

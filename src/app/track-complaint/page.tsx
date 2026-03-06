@@ -16,13 +16,31 @@ type Complaint = {
 
 export default function TrackComplaintPage() {
   const [nik, setNik] = useState('')
+  const [nikError, setNikError] = useState('')
   const [complaints, setComplaints] = useState<Complaint[]>([])
   const [searched, setSearched] = useState(false)
   const [loading, setLoading] = useState(false)
 
+  const handleNikChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/\D/g, '').substring(0, 16)
+    setNik(value)
+    
+    if (value.length === 0) {
+      setNikError('')
+    } else if (value.length < 16) {
+      setNikError('NIK harus 16 karakter')
+    } else {
+      setNikError('')
+    }
+  }
+
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!nik.trim()) return
+    if (nik.length !== 16) {
+      setNikError('NIK harus 16 karakter')
+      return
+    }
     setLoading(true)
     try {
       const res = await fetch('/api/track', {
@@ -55,17 +73,38 @@ export default function TrackComplaintPage() {
             <p className="text-gray-400 mt-2">Masukkan NIK Anda untuk melihat status pengaduan</p>
           </div>
 
-          <form onSubmit={handleSearch} className="card flex gap-3 !p-4 mb-8">
-            <input
-              value={nik}
-              onChange={e => setNik(e.target.value)}
-              placeholder="Masukkan NIK Anda..."
-              className="input-field flex-1"
-              required
-            />
-            <button type="submit" disabled={loading} className="btn-primary whitespace-nowrap disabled:opacity-50">
-              {loading ? 'Mencari...' : '🔍 Cari'}
-            </button>
+          <form onSubmit={handleSearch} className="card !p-4 mb-8">
+            <div className="flex gap-3">
+              <div className="flex-1">
+                <input
+                  value={nik}
+                  onChange={handleNikChange}
+                  placeholder="Masukkan 16 digit NIK Anda..."
+                  className={`input-field w-full ${
+                    nikError ? 'border-red-500' : 
+                    nik.length === 16 ? 'border-green-500' : 'border-gray-300'
+                  }`}
+                  required
+                  maxLength={16}
+                />
+                <div className="flex justify-between items-center mt-1">
+                  <div className="text-xs">
+                    {nikError && (
+                      <span className="text-red-500">{nikError}</span>
+                    )}
+                    {!nikError && nik.length === 16 && (
+                      <span className="text-green-600">NIK valid ✓</span>
+                    )}
+                  </div>
+                  <div className="text-xs text-gray-400">
+                    {nik.length}/16
+                  </div>
+                </div>
+              </div>
+              <button type="submit" disabled={loading || nik.length !== 16} className="btn-primary whitespace-nowrap disabled:opacity-50 self-start">
+                {loading ? 'Mencari...' : '🔍 Cari'}
+              </button>
+            </div>
           </form>
 
           {searched && complaints.length === 0 && (

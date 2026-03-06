@@ -4,7 +4,7 @@ import { useSession, signOut } from 'next-auth/react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useState } from 'react'
-import { FiHome, FiFileText, FiPlusCircle, FiLogOut, FiMenu, FiX } from 'react-icons/fi'
+import { FiHome, FiFileText, FiPlusCircle, FiLogOut, FiMenu, FiX, FiUser } from 'react-icons/fi'
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { data: session } = useSession()
@@ -14,6 +14,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   const links = [
     { href: '/dashboard', label: 'Dashboard', icon: <FiHome /> },
+    { href: '/dashboard/biodata', label: 'Biodata Saya', icon: <FiUser /> },
     { href: '/dashboard/complaints', label: 'Pengaduan Saya', icon: <FiFileText /> },
     { href: '/dashboard/complaints/add', label: 'Buat Pengaduan', icon: <FiPlusCircle /> },
   ]

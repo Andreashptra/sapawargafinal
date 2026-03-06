@@ -11,6 +11,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Semua field wajib diisi' }, { status: 400 })
     }
 
+    // Validasi NIK harus 16 karakter
+    const cleanNIK = nik.replace(/\D/g, '')
+    if (cleanNIK.length !== 16) {
+      return NextResponse.json({ error: 'NIK harus 16 karakter' }, { status: 400 })
+    }
+
     const { data: existing } = await supabase
       .from('society')
       .select('id')
@@ -25,7 +31,7 @@ export async function POST(req: NextRequest) {
     const { data: society, error } = await supabase
       .from('society')
       .insert({
-        nik,
+        nik: cleanNIK,
         name,
         username,
         email: email || '',

@@ -10,6 +10,7 @@ export default function AdminSocietyPage() {
   const [showModal, setShowModal] = useState(false)
   const [form, setForm] = useState({ nik: '', name: '', username: '', email: '', password: '', phoneNumber: '', address: '' })
   const [submitting, setSubmitting] = useState(false)
+  const [nikError, setNikError] = useState('')
 
   const load = () => {
     setLoading(true)
@@ -21,8 +22,30 @@ export default function AdminSocietyPage() {
 
   useEffect(() => { load() }, [])
 
+  const handleNikChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/\D/g, '').slice(0, 16)
+    setForm(p => ({...p, nik: value}))
+    
+    if (value.length > 0 && value.length < 16) {
+      setNikError('NIK harus 16 karakter')
+    } else {
+      setNikError('')
+    }
+  }
+
+  const resetForm = () => {
+    setForm({ nik: '', name: '', username: '', email: '', password: '', phoneNumber: '', address: '' })
+    setNikError('')
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    if (form.nik.length !== 16) {
+      setNikError('NIK harus 16 karakter')
+      return
+    }
+    
     setSubmitting(true)
     try {
       const res = await fetch('/api/society', {
@@ -33,11 +56,12 @@ export default function AdminSocietyPage() {
       if (res.ok) {
         toast.success('Masyarakat ditambahkan')
         setShowModal(false)
-        setForm({ nik: '', name: '', username: '', email: '', password: '', phoneNumber: '', address: '' })
+        resetForm()
         load()
       } else {
         const data = await res.json()
         toast.error(data.error || 'Gagal menambah')
+      }
       }
     } catch {
       toast.error('Terjadi kesalahan')
@@ -58,7 +82,7 @@ export default function AdminSocietyPage() {
           <h2 className="text-xl font-bold text-dark">Data Masyarakat</h2>
           <p className="text-sm text-gray-400 mt-0.5">{society.length} masyarakat terdaftar</p>
         </div>
-        <button onClick={() => setShowModal(true)} className="btn-primary text-sm flex items-center gap-1.5"><FiPlus /> Tambah</button>
+        <button onClick={() => {setShowModal(true); resetForm()}} className="btn-primary text-sm flex items-center gap-1.5"><FiPlus /> Tambah</button>
       </div>
 
       {loading ? (
@@ -95,21 +119,36 @@ export default function AdminSocietyPage() {
       )}
 
       {showModal && (
-        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4" onClick={() => setShowModal(false)}>
+        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4" onClick={() => {setShowModal(false); resetForm()}}>
           <div className="bg-white rounded-2xl w-full max-w-md p-6" onClick={e => e.stopPropagation()}>
             <div className="flex justify-between items-center mb-5">
               <h3 className="font-bold text-dark text-lg">Tambah Masyarakat</h3>
-              <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-dark"><FiX /></button>
+              <button onClick={() => {setShowModal(false); resetForm()}} className="text-gray-400 hover:text-dark"><FiX /></button>
             </div>
             <form onSubmit={handleSubmit} className="space-y-3">
-              <input value={form.nik} onChange={e => setForm(p => ({...p, nik: e.target.value}))} required className="input-field" placeholder="NIK" />
+              <div>
+                <input 
+                  value={form.nik} 
+                  onChange={handleNikChange} 
+                  required 
+                  className={`input-field ${nikError ? 'border-red-500' : form.nik.length === 16 ? 'border-green-500' : ''}`}
+                  placeholder="NIK" 
+                  maxLength={16}
+                />
+                <div className="flex justify-between text-xs mt-1">
+                  <span className="text-red-500">{nikError}</span>
+                  <span className={`${form.nik.length === 16 ? 'text-green-500' : 'text-gray-400'}`}>
+                    {form.nik.length}/16
+                  </span>
+                </div>
+              </div>
               <input value={form.name} onChange={e => setForm(p => ({...p, name: e.target.value}))} required className="input-field" placeholder="Nama Lengkap" />
               <input value={form.username} onChange={e => setForm(p => ({...p, username: e.target.value}))} required className="input-field" placeholder="Username" />
               <input type="email" value={form.email} onChange={e => setForm(p => ({...p, email: e.target.value}))} className="input-field" placeholder="Email" />
               <input value={form.phoneNumber} onChange={e => setForm(p => ({...p, phoneNumber: e.target.value}))} className="input-field" placeholder="No. HP" />
               <input value={form.address} onChange={e => setForm(p => ({...p, address: e.target.value}))} className="input-field" placeholder="Alamat" />
               <input type="password" value={form.password} onChange={e => setForm(p => ({...p, password: e.target.value}))} required className="input-field" placeholder="Password" />
-              <button type="submit" disabled={submitting} className="btn-primary w-full disabled:opacity-50">{submitting ? 'Menyimpan...' : 'Simpan'}</button>
+              <button type="submit" disabled={submitting || form.nik.length !== 16} className="btn-primary w-full disabled:opacity-50">{submitting ? 'Menyimpan...' : 'Simpan'}</button>
             </form>
           </div>
         </div>

@@ -26,11 +26,18 @@ export async function POST(req: NextRequest) {
   }
   try {
     const body = await req.json()
+    
+    // Validate NIK
+    const cleanNIK = body.nik.replace(/\D/g, '')
+    if (cleanNIK.length !== 16) {
+      return NextResponse.json({ error: 'NIK harus 16 karakter' }, { status: 400 })
+    }
+    
     const hashedPw = await hash(body.password, 12)
     const { data: society, error } = await supabase
       .from('society')
       .insert({
-        nik: body.nik,
+        nik: cleanNIK,
         name: body.name,
         username: body.username,
         email: body.email || '',

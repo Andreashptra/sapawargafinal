@@ -9,15 +9,35 @@ export default function RegisterPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [form, setForm] = useState({ nik: '', name: '', username: '', email: '', phoneNumber: '', address: '', password: '', confirmPassword: '' })
+  const [nikError, setNikError] = useState('')
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))
+    const { name, value } = e.target
+    
+    // Khusus untuk NIK: validasi dan hanya izinkan angka
+    if (name === 'nik') {
+      // Hanya angka dan maksimal 16 karakter
+      const nikValue = value.replace(/\D/g, '').substring(0, 16)
+      setForm(prev => ({ ...prev, [name]: nikValue }))
+      
+      // Validasi NIK real-time
+      if (nikValue.length === 0) {
+        setNikError('')
+      } else if (nikValue.length < 16) {
+        setNikError('NIK harus 16 karakter')
+      } else if (nikValue.length === 16) {
+        setNikError('')
+      }
+    } else {
+      setForm(prev => ({ ...prev, [name]: value }))
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (form.password !== form.confirmPassword) return toast.error('Password tidak cocok')
     if (form.password.length < 6) return toast.error('Password minimal 6 karakter')
+    if (form.nik.length !== 16) return toast.error('NIK harus 16 karakter')
 
     setLoading(true)
     try {
@@ -53,7 +73,31 @@ export default function RegisterPage() {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-600 mb-1">NIK</label>
-              <input name="nik" value={form.nik} onChange={handleChange} required className="input-field" placeholder="NIK" />
+              <input 
+                name="nik" 
+                value={form.nik} 
+                onChange={handleChange} 
+                required 
+                className={`input-field ${
+                  nikError ? 'border-red-500' : 
+                  form.nik.length === 16 ? 'border-green-500' : 'border-gray-300'
+                }`} 
+                placeholder="Masukkan 16 digit NIK"
+                maxLength={16}
+              />
+              <div className="flex justify-between items-center mt-1">
+                <div className="text-xs">
+                  {nikError && (
+                    <span className="text-red-500">{nikError}</span>
+                  )}
+                  {!nikError && form.nik.length === 16 && (
+                    <span className="text-green-600">NIK valid ✓</span>
+                  )}
+                </div>
+                <div className="text-xs text-gray-400">
+                  {form.nik.length}/16
+                </div>
+              </div>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-600 mb-1">Nama Lengkap</label>
