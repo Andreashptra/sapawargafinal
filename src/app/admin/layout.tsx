@@ -5,12 +5,15 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { FiHome, FiUsers, FiFileText, FiBarChart2, FiLogOut, FiMenu, FiX, FiUserCheck } from 'react-icons/fi'
+import { useIOSSafeArea } from '@/hooks/useIOSSafeArea'
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { data: session } = useSession()
   const pathname = usePathname()
   const router = useRouter()
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const headerRef = useIOSSafeArea<HTMLElement>()
+  const sidebarRef = useIOSSafeArea<HTMLElement>()
 
   if (pathname === '/admin/login') return <>{children}</>
 
@@ -36,7 +39,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     <div className="min-h-screen bg-gray-50 flex">
       {sidebarOpen && <div className="fixed inset-0 bg-black/40 z-40 lg:hidden" onClick={() => setSidebarOpen(false)} />}
 
-      <aside className={`fixed lg:static inset-y-0 left-0 z-50 w-64 bg-[#1a1a2e] flex flex-col transition-transform lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+      <aside ref={sidebarRef} className={`fixed lg:static inset-y-0 left-0 z-50 w-64 bg-[#1a1a2e] flex flex-col transition-transform lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="p-5 border-b border-white/10">
           <Link href="/" className="flex items-center gap-3">
             <img src="/sapa-warga_logo_keckebonagung.svg" alt="Logo" className="w-10 h-10" />
@@ -78,7 +81,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </aside>
 
       <div className="flex-1 flex flex-col min-w-0">
-        <header className="bg-white border-b border-gray-100 px-4 lg:px-8 py-4 flex items-center gap-4">
+        <header ref={headerRef} className="sticky top-0 z-10 bg-white border-b border-gray-100 px-4 lg:px-8 py-4 flex items-center gap-4">
           <button onClick={() => setSidebarOpen(true)} className="lg:hidden text-dark text-xl"><FiMenu /></button>
           <h1 className="text-lg font-bold text-dark">Admin Panel</h1>
         </header>
