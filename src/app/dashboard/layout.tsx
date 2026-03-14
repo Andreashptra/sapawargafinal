@@ -4,7 +4,9 @@ import { useSession, signOut } from 'next-auth/react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useState } from 'react'
-import { FiHome, FiFileText, FiPlusCircle, FiLogOut, FiMenu, FiX } from 'react-icons/fi'
+import Image from 'next/image'
+import { FiHome, FiFileText, FiPlusCircle, FiLogOut, FiMenu, FiUser } from 'react-icons/fi'
+import { useIOSSafeArea } from '@/hooks/useIOSSafeArea'
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { data: session } = useSession()
@@ -35,7 +37,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <aside ref={sidebarRef} className={`fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-100 flex flex-col transition-transform lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="p-5 border-b border-gray-100">
           <Link href="/" className="flex items-center gap-3">
-            <img src="/sapa-warga_logo_keckebonagung.svg" alt="Logo" className="w-10 h-10" />
+            <Image src="/sapa-warga_logo_keckebonagung.svg" alt="Logo" width={40} height={40} className="w-10 h-10" />
             <div>
               <h2 className="font-bold text-dark text-sm">Sapa Warga</h2>
               <p className="text-[10px] text-gray-400">Kec. Kebonagung</p>
